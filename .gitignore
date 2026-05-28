@@ -1,0 +1,19 @@
+# ProjectTracker - Real Estate Variance Analysis System
+
+## Ignore files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.DS_Store
+*.db
+*.sqlite
+*.sqlite3
+.vscode/
+.env
+.venv/
+env/
+data/uploads/*
+data/exports/*
+!data/uploads/.gitkeep
+!data/exports/.gitkeep
