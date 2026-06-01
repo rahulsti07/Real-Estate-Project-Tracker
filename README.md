@@ -99,6 +99,12 @@ The app will open in your default browser at `http://localhost:8501`
 
 ## 📖 How to Use
 
+### ⚠️ Important: Currency Specification
+**All financial values must be entered in Indian Rupees (₹)**
+- Use units like: `₹ Crore` (10 Million), `₹ Lakh` (100,000), or `₹` (Rupees)
+- DO NOT use USD, $, or any other currency
+- The system will display all values with ₹ symbol
+
 ### 1️⃣ Create a Project
 - Click **"Create Project"** in the sidebar
 - Enter project name, description, and start date
@@ -155,11 +161,15 @@ Here's what a typical workflow looks like:
 ✓ Visual chart highlights variances instantly
 ```
 
-### Video Demo
-*[Recommended: Create a short animated GIF or video showing this workflow]*
-- Upload to `docs/demo.gif` or link to YouTube
-- Show CSV import workflow for batch loading
-- Display the interactive charts updating in real-time
+### ⚠️ Important: Currency Specification
+**All financial values must be entered in Indian Rupees (₹)**
+- Use units like: `₹ Crore` (10 Million), `₹ Lakh` (100,000), or `₹` (Rupees)
+- DO NOT use USD, $, or any other currency
+- The system will display all values with ₹ symbol
+- **Conversion Reference:**
+  - 1 Crore = 10,000,000 (Ten Million Rupees)
+  - 1 Lakh = 100,000 (One Hundred Thousand Rupees)
+  - 1 Crore = 100 Lakhs
 
 ---
 

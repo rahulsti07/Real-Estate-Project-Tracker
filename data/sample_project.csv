@@ -1,11 +1,11 @@
 Parameter,Projected,Actual,Unit
 Completion Time,12,14,months
-Budget,50,65,₹ Cr
+Project Budget,50,65,₹ Crore
 Units Sold,200,120,units
 Land Acquisition,8,8,months
 Approvals & Licensing,6,9,months
 Construction Phase 1,24,28,months
-Sales Revenue,150,95,₹ Cr
+Sales Revenue,150,95,₹ Crore
 Occupancy Rate,85,60,%
 Cost per Unit,25,32,₹ Lakh
 Timeline Variance,0,-2,months

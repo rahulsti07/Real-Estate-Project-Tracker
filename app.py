@@ -17,6 +17,16 @@ from src.database import (
 from src.variance_engine import VarianceAnalyzer
 from src.utils import parse_csv, validate_project_data, format_currency, format_percentage
 
+# ==================== Helper Functions ====================
+
+def format_for_display(value, currency="₹"):
+    """Format numeric value for display with Indian Rupees"""
+    if pd.isna(value):
+        return "—"
+    if isinstance(value, (int, float)):
+        return f"{currency} {value:,.2f}"
+    return str(value)
+
 # Page configuration
 st.set_page_config(
     page_title="ProjectTracker - Variance Analysis",
@@ -432,6 +442,11 @@ def main():
                     convert_dtype=False
                 )
                 
+                # Format currency columns for display
+                display_df['Projected'] = display_df['Projected'].apply(lambda x: format_for_display(x))
+                display_df['Actual'] = display_df['Actual'].apply(lambda x: format_for_display(x))
+                display_df['Variance'] = display_df['Variance'].apply(lambda x: format_for_display(x))
+                
                 # Create displayable dataframe
                 display_cols = ['Parameter', 'Projected', 'Actual', 'Unit', 'Variance', '% Deviation', 'Status']
                 display_df = display_df[display_cols]
@@ -452,14 +467,17 @@ def main():
                         
                         for idx, row in flagged_df.iterrows():
                             dev_color = "#f44336" if abs(row['% Deviation']) > 30 else "#ff9800"
+                            proj_display = format_for_display(row['Projected'])
+                            actual_display = format_for_display(row['Actual'])
+                            var_display = format_for_display(row['Variance'])
                             st.markdown(f"""
                             <div class="param-card" style="border-left: 4px solid {dev_color};">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <strong style="font-size: 1.1em; color: #333;">{row['Parameter']}</strong>
                                         <p style="margin: 5px 0; color: #666; font-size: 0.9em;">
-                                            Projected: <strong>{row['Projected']} {row['Unit']}</strong> → 
-                                            Actual: <strong>{row['Actual']} {row['Unit']}</strong>
+                                            Projected: <strong>{proj_display} {row['Unit']}</strong> → 
+                                            Actual: <strong>{actual_display} {row['Unit']}</strong>
                                         </p>
                                     </div>
                                     <div style="text-align: right;">
@@ -467,7 +485,7 @@ def main():
                                             {row['% Deviation']:.1f}%
                                         </div>
                                         <div style="font-size: 0.85em; color: #999;">
-                                            Variance: {row['Variance']:.2f}
+                                            Variance: {var_display}
                                         </div>
                                     </div>
                                 </div>
@@ -613,6 +631,8 @@ def main():
         st.markdown("## ➕ Add Project Parameters")
         st.caption("Add individual parameters to track project variance")
         
+        st.warning("💰 **Currency Note:** All financial values must be entered in **Indian Rupees (₹)**. Examples: ₹ Crore (10 Million), ₹ Lakh (100,000), or ₹ (Rupees). DO NOT use USD or any other currency.")
+        
         with st.form("add_parameter_form"):
             col1, col2 = st.columns(2)
             
@@ -632,9 +652,9 @@ def main():
             with col2:
                 param_unit = st.text_input(
                     "Unit of Measurement",
-                    placeholder="e.g., ₹ Cr, months, units, %",
+                    placeholder="e.g., ₹ Crore (INR), months, units, %",
                     max_chars=30,
-                    help="Unit for the parameter"
+                    help="Use ₹ for Indian Rupees. Examples: ₹ Crore, ₹ Lakh, ₹ (for rupees)"
                 )
                 param_actual = st.number_input(
                     "Actual Value (Optional)",
@@ -694,7 +714,7 @@ def main():
                 with col2:
                     st.metric(
                         "Projected",
-                        f"{projected}",
+                        format_for_display(projected),
                         help="Projected value"
                     )
                 
@@ -704,12 +724,12 @@ def main():
                             deviation = ((actual - projected) / projected) * 100
                             st.metric(
                                 "Actual",
-                                f"{actual}",
+                                format_for_display(actual),
                                 delta=f"{deviation:.1f}%",
                                 help="Actual value with deviation"
                             )
                         else:
-                            st.metric("Actual", f"{actual}", help="Actual value")
+                            st.metric("Actual", format_for_display(actual), help="Actual value")
                     else:
                         st.metric("Actual", "—", help="Not set yet")
                 
@@ -734,18 +754,24 @@ def main():
     with tab3:
         st.markdown("## 📥 Import Data from CSV")
         
+        st.warning("🇮🇳 **Currency Requirement:** All financial values in your CSV must be in **Indian Rupees (₹)**. Use units like ₹ Crore, ₹ Lakh, or ₹. DO NOT import USD or any other currency.")
+        
         st.info(
             "📋 **Required columns:** Parameter, Projected  \n"
             "**Optional columns:** Actual, Unit"
         )
         
         # Sample template
-        with st.expander("📄 View CSV Template"):
+        with st.expander("📄 View CSV Template (All amounts in INR)"):
+            st.info("⚠️ **Important:** All financial values must be entered in **Indian Rupees (₹)**. Do NOT use USD or any other currency.")
             sample_csv = """Parameter,Projected,Actual,Unit
 Completion Time,12,14,months
-Project Budget,50,65,₹ Cr
+Project Budget,50,65,₹ Crore
 Units Sold,200,120,units
-Cost per Unit,25,32,₹ Lakh"""
+Cost per Unit,25,32,₹ Lakh
+Land Cost,10,12,₹ Crore
+Labor Cost,8,9.5,₹ Crore
+Material Cost,15,18,₹ Crore"""
             st.code(sample_csv, language="csv")
             st.download_button(
                 label="📥 Download CSV Template",
@@ -853,9 +879,15 @@ Cost per Unit,25,32,₹ Lakh"""
                 elif sort_by == "Parameter (A-Z)":
                     display_df = display_df.sort_values("Parameter")
                 
+                # Format currency columns for display
+                display_df_formatted = display_df.copy()
+                display_df_formatted['Projected'] = display_df_formatted['Projected'].apply(lambda x: format_for_display(x))
+                display_df_formatted['Actual'] = display_df_formatted['Actual'].apply(lambda x: format_for_display(x))
+                display_df_formatted['Variance'] = display_df_formatted['Variance'].apply(lambda x: format_for_display(x))
+                
                 st.divider()
                 st.markdown("### Analysis Results")
-                st.dataframe(display_df, use_container_width=True, hide_index=True, height=400)
+                st.dataframe(display_df_formatted, use_container_width=True, hide_index=True, height=400)
                 
                 # Statistics
                 if show_stats:
@@ -936,6 +968,8 @@ Cost per Unit,25,32,₹ Lakh"""
             - Required columns: Parameter, Projected
             - Optional columns: Actual, Unit
             - Download template from the Import tab
+            - **All financial values MUST be in Indian Rupees (₹)**
+            - Recommended units: ₹ Crore, ₹ Lakh, ₹ (rupees)
             - Ensure numeric values use '.' as decimal separator
             """,
             
@@ -947,7 +981,10 @@ Cost per Unit,25,32,₹ Lakh"""
             
             "Tips & Tricks": """
             - Use descriptive parameter names
-            - Keep units consistent (₹, %, months, etc.)
+            - Keep units consistent (₹ Crore, ₹ Lakh, %, months, etc.)
+            - **Always use Indian Rupees (₹) for financial parameters**
+            - DO NOT use USD, $ or any other currency
+            - 1 Crore = 10 Million Rupees, 1 Lakh = 100,000 Rupees
             - Update actual values regularly
             - Export reports for stakeholder reviews
             - Use the Analysis tab for deep insights
