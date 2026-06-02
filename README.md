@@ -30,6 +30,14 @@ A comprehensive dashboard for monitoring **Projected vs Actual** parameters in r
 - Variance history tracking
 - Complete audit trail
 
+✅ **Car Sales Analysis Module** 🚗
+- Year-on-Year growth analysis for Indian car sales
+- Forecasting with linear regression (3+ years ahead)
+- Fuel type tracking: Petrol, Diesel, EV, Hybrid
+- Market share visualization and trend analysis
+- Automatic deviation flagging (>30% threshold)
+- Interactive Streamlit dashboard with multi-year comparisons
+
 ---
 
 ## 📋 Project Structure
@@ -43,9 +51,13 @@ Project Tracker/
 │   ├── __init__.py       # Package init
 │   ├── database.py       # SQLite database management
 │   ├── variance_engine.py # Variance calculation logic
+│   ├── car_sales_analyzer.py  # Car sales analysis engine
 │   └── utils.py          # Utility functions
+├── pages/
+│   └── car_sales_analysis.py  # Car sales dashboard (Streamlit page)
 ├── data/
 │   ├── projecttracker.db # SQLite database (auto-created)
+│   ├── car_sales_india.csv    # Indian car sales data
 │   ├── sample_project.csv # Sample data
 │   ├── uploads/          # CSV upload directory
 │   └── exports/          # Export directory
@@ -130,6 +142,14 @@ The app will open in your default browser at `http://localhost:8501`
 ### 5️⃣ Export Results
 - In Dashboard tab, use **Download CSV** or **Download Excel** buttons
 - Results include all variance calculations
+
+### 🚗 Car Sales Analysis Dashboard
+- Access via **"Car Sales Analysis"** page in the sidebar
+- View year-on-year growth trends for Petrol, Diesel, EV, and Hybrid vehicles
+- Analyze market share evolution and fuel type trends
+- Review forecasts for 2027-2029 with linear regression analysis
+- Identify critical deviations (>30%) automatically
+- Interactive charts and detailed statistics
 
 ---
 
